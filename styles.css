@@ -1,0 +1,724 @@
+/* Sets & Reps: read at arm's length, tapped between sets.
+   Colours come from the gym: rubber floor, chalk, and the competition plate colours
+   (red 25 kg, green 10 kg, yellow 15 kg, blue 20 kg) for under the range / in it / over it,
+   and for go lighter / keep / go heavier. */
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('fonts/barlow-condensed-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Barlow';
+  src: url('fonts/barlow-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow';
+  src: url('fonts/barlow-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+:root {
+  --floor: #232427;
+  --floor-raised: #303237;
+  --line: #4a4c52;
+  --chalk: #efeee8;
+  --chalk-dim: #a9aaa4;
+  --plate-red: #c8222a;
+  --plate-green: #177a45;
+  --plate-yellow: #f1c232;
+  --plate-blue: #1f5fbf;
+
+  --display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --text: 'Barlow', system-ui, -apple-system, sans-serif;
+
+  --gutter: 16px;
+  --radius: 14px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--floor);
+  color: var(--chalk);
+  font: 400 18px/1.4 var(--text);
+  -webkit-text-size-adjust: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+p {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+:focus-visible {
+  outline: 3px solid var(--plate-yellow);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Screens */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + var(--gutter))
+    calc(env(safe-area-inset-bottom) + var(--gutter)) calc(env(safe-area-inset-left) + var(--gutter));
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  margin-bottom: 20px;
+}
+
+.brand {
+  margin: 0;
+  font: 600 30px/1 var(--display);
+  letter-spacing: 0.01em;
+}
+
+.history .bar,
+.set .bar {
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.bar-title {
+  min-width: 0;
+  overflow: hidden;
+  font: 600 24px/1.1 var(--display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.huge {
+  font-family: var(--display);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.context {
+  color: var(--chalk-dim);
+  font-size: 20px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Buttons */
+
+.start-button {
+  min-height: 136px;
+  margin-top: auto;
+  border: 0;
+  border-radius: 22px;
+  background: var(--plate-blue);
+  color: var(--chalk);
+  font: 600 min(64px, 15vw) / 1 var(--display);
+  cursor: pointer;
+}
+
+.start-button:active {
+  filter: brightness(0.9);
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.text-button {
+  min-height: 48px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--chalk-dim);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.small-button {
+  flex: 0 0 auto;
+  min-width: 84px;
+  min-height: 52px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--chalk);
+  color: var(--floor);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row > * {
+  flex: 1;
+}
+
+/* Start */
+
+.fields {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label,
+.field legend,
+.backup-title {
+  color: var(--chalk-dim);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+select,
+input[type='text'] {
+  width: 100%;
+  min-height: 60px;
+  padding: 0 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--floor-raised);
+  font-size: 22px;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%23efeee8' stroke-width='2.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+
+.inline {
+  display: flex;
+  gap: 10px;
+}
+
+.new-item .text-button {
+  justify-self: start;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Sets, reps and rest in one wrapping row: [3] sets × [8] – [12] reps  rest [90] s */
+.target-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  min-width: 0;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--chalk-dim);
+  font-size: 19px;
+}
+
+.target-row legend {
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.target-part {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.target-row input.num {
+  width: 60px;
+  min-height: 52px;
+  padding: 0 6px;
+  color: var(--chalk);
+  font: 600 26px/1 var(--display);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.target-row input.num.wide {
+  width: 76px;
+}
+
+.target {
+  margin-top: 22px;
+  font: 600 24px/1.2 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+
+.history .target {
+  margin: 0 0 18px;
+  color: var(--chalk-dim);
+  font: 400 18px/1.4 var(--text);
+}
+
+.target strong {
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.weight {
+  position: relative;
+}
+
+.weight input {
+  min-height: 76px;
+  padding-right: 64px;
+  font: 600 48px/1 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+
+.weight .unit {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--chalk-dim);
+  font-size: 22px;
+  pointer-events: none;
+}
+
+.last {
+  margin-top: 10px;
+  color: var(--chalk-dim);
+  font-size: 19px;
+}
+
+.last strong {
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.message {
+  min-height: 1.4em;
+  margin: 10px 0 14px;
+  color: var(--plate-yellow);
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.note {
+  margin-top: 12px;
+  color: var(--chalk-dim);
+  font-size: 15px;
+  text-align: center;
+}
+
+.banner {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(env(safe-area-inset-top) + 8px) var(--gutter) 10px;
+  background: var(--plate-yellow);
+  color: var(--floor);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Set: which set, the weight, and the reps between two big steppers. */
+
+.set-head {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.set-heading {
+  margin: 0 0 4px;
+  font: 600 min(16vw, 64px) / 1 var(--display);
+}
+
+.reps {
+  display: grid;
+  grid-template-columns: 88px 1fr 88px;
+  gap: 10px;
+}
+
+.reps input[type='text'] {
+  min-height: 112px;
+  padding: 0;
+  font: 600 96px/1 var(--display);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.step {
+  min-height: 112px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--chalk);
+  color: var(--floor);
+  font: 600 56px/1 var(--display);
+  cursor: pointer;
+}
+
+.step:active {
+  filter: brightness(0.85);
+}
+
+.set .start-button {
+  min-height: 112px;
+  margin-top: auto;
+}
+
+/* Rest: the time left, a bar running down, green for the last ten seconds. */
+
+.rest {
+  justify-content: space-between;
+  gap: 16px;
+  transition:
+    background-color 400ms,
+    color 400ms;
+}
+
+.rest-clock {
+  display: grid;
+  gap: 28px;
+}
+
+.rest .huge {
+  font-size: min(42vw, 40dvh);
+}
+
+body[data-zone='ready'] .rest {
+  background: var(--plate-green);
+}
+
+body[data-zone='ready'] .rest .context,
+body[data-zone='ready'] .rest .last,
+body[data-zone='ready'] .rest .cue {
+  color: inherit;
+}
+
+body[data-zone='ready'] .rest .secondary-button {
+  border-color: currentColor;
+}
+
+.track {
+  position: relative;
+  height: 10px;
+  margin: 0 6px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: rgba(239, 238, 232, 0.18);
+}
+
+.track .fill {
+  position: absolute;
+  inset: 0;
+  background: var(--chalk);
+  transform: scaleX(var(--left, 1));
+  transform-origin: left;
+}
+
+.cue {
+  color: var(--chalk-dim);
+  font-size: 22px;
+  text-align: center;
+}
+
+.rest .last {
+  text-align: center;
+}
+
+/* Result: the whole screen takes the plate colour of the advice. */
+
+.result {
+  gap: 12px;
+}
+
+body[data-advice='lighter'] .result {
+  background: var(--plate-red);
+}
+
+body[data-advice='keep'] .result {
+  background: var(--plate-green);
+}
+
+body[data-advice='heavier'] .result {
+  background: var(--plate-yellow);
+  color: var(--floor);
+}
+
+.result .context {
+  color: inherit;
+}
+
+.outcome {
+  display: grid;
+  flex: 1;
+  align-content: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.verdict {
+  font: 600 min(18vw, 88px) / 0.95 var(--display);
+}
+
+.result-sets {
+  font: 600 min(10vw, 44px) / 1.1 var(--display);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.advice {
+  font-size: 20px;
+}
+
+.result .start-button {
+  margin-top: 0;
+  background: var(--chalk);
+  color: var(--floor);
+}
+
+.result .secondary-button {
+  border-color: currentColor;
+}
+
+/* History */
+
+.history .field {
+  margin-bottom: 18px;
+}
+
+.history-list {
+  display: grid;
+  gap: 18px;
+}
+
+.day h3 {
+  margin: 0 0 6px;
+  color: var(--chalk-dim);
+  font: 600 22px/1.2 var(--display);
+}
+
+.day ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 4.2em 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding-left: 14px;
+  border-left: 8px solid var(--chalk-dim);
+  border-radius: 6px;
+  background: var(--floor-raised);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry.under {
+  border-left-color: var(--plate-red);
+}
+
+.entry.in {
+  border-left-color: var(--plate-green);
+}
+
+.entry.over {
+  border-left-color: var(--plate-yellow);
+}
+
+.entry .which {
+  display: grid;
+  color: var(--chalk-dim);
+  line-height: 1.2;
+}
+
+.entry .which small {
+  font-size: 14px;
+}
+
+.entry .count {
+  font: 600 28px/1 var(--display);
+}
+
+.entry .delete {
+  min-width: 56px;
+  min-height: 56px;
+  border: 0;
+  background: none;
+  color: var(--chalk-dim);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.entry .delete.armed {
+  min-width: 84px;
+  border-radius: 0 6px 6px 0;
+  background: var(--plate-red);
+  color: var(--chalk);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.history .groups {
+  min-width: 0;
+  margin: 28px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.groups legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.field .check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--floor-raised);
+  color: var(--chalk);
+  font-size: 19px;
+  cursor: pointer;
+}
+
+.check:has(input:checked) {
+  border-color: var(--chalk-dim);
+}
+
+.check input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--chalk);
+}
+
+.exercise-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.history #rename-form,
+.history #target-form {
+  margin: 12px 0 0;
+}
+
+#rename-form .message,
+#target-form .message {
+  margin: 0;
+}
+
+.secondary-button.armed,
+.text-button.armed {
+  padding: 0 14px;
+  border-color: var(--plate-red);
+  border-radius: var(--radius);
+  background: var(--plate-red);
+  color: var(--chalk);
+}
+
+.backup {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.backup-title {
+  margin-bottom: 8px;
+}
+
+.backup .row {
+  flex-wrap: wrap;
+}
+
+.backup .row > * {
+  flex: 1 1 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rest {
+    transition: none;
+  }
+}

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sets &amp; Reps" />
+    <meta name="theme-color" content="#232427" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Sets &amp; Reps</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icons/icon-180.png" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="preload" href="fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body data-screen="start">
+    <p id="banner" class="banner" role="status" hidden></p>
+
+    <section id="screen-start" class="screen start">
+      <header class="bar">
+        <h1 class="brand">Sets &amp; Reps</h1>
+        <button id="open-history" class="text-button" type="button">History</button>
+      </header>
+
+      <div class="fields">
+        <div class="field" id="group-field">
+          <label for="group">Group</label>
+          <select id="group"></select>
+        </div>
+
+        <form id="new-group" class="field new-item" hidden>
+          <label for="new-group-name">New group</label>
+          <div class="inline">
+            <input id="new-group-name" type="text" placeholder="Push" autocomplete="off" autocapitalize="sentences" enterkeyhint="done" />
+            <button class="small-button" type="submit">Add</button>
+          </div>
+          <button id="new-group-cancel" class="text-button" type="button">Cancel</button>
+        </form>
+
+        <form id="edit-group" class="field new-item" hidden>
+          <label for="edit-group-name">Group name</label>
+          <div class="inline">
+            <input id="edit-group-name" type="text" autocomplete="off" autocapitalize="sentences" enterkeyhint="done" />
+            <button class="small-button" type="submit">Save</button>
+          </div>
+          <div class="actions">
+            <button id="edit-group-cancel" class="text-button" type="button">Cancel</button>
+            <button id="delete-group" class="text-button" type="button">Delete group</button>
+          </div>
+        </form>
+
+        <div class="field" id="exercise-field">
+          <label for="exercise">Exercise</label>
+          <select id="exercise"></select>
+        </div>
+
+        <form id="new-exercise" class="field new-item" hidden>
+          <label for="new-exercise-name">New exercise</label>
+          <div class="inline">
+            <input id="new-exercise-name" type="text" placeholder="Bench press" autocomplete="off" autocapitalize="sentences" enterkeyhint="done" />
+            <button class="small-button" type="submit">Add</button>
+          </div>
+          <fieldset class="target-row">
+            <legend>Target</legend>
+            <span class="target-part">
+              <input id="new-sets" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Sets" />
+              sets ×
+            </span>
+            <span class="target-part">
+              <input id="new-from" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Reps, at least" />
+              –
+              <input id="new-to" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Reps, at most" />
+              reps
+            </span>
+            <span class="target-part">
+              rest
+              <input id="new-rest" class="num wide" type="text" inputmode="numeric" autocomplete="off" aria-label="Rest in seconds" />
+              s
+            </span>
+          </fieldset>
+          <button id="new-exercise-cancel" class="text-button" type="button">Cancel</button>
+        </form>
+      </div>
+
+      <p id="start-target" class="target"></p>
+      <p id="start-last" class="last"></p>
+      <p id="start-today" class="last" hidden></p>
+      <p id="start-message" class="message" role="status"></p>
+
+      <button id="start-button" class="start-button" type="button">Start</button>
+      <p id="volume-note" class="note">Turn the media volume up to hear the rest countdown.</p>
+      <p id="sound-note" class="note" hidden></p>
+    </section>
+
+    <section id="screen-set" class="screen set" hidden>
+      <header class="bar">
+        <button id="set-back" class="text-button" type="button">Back</button>
+        <p id="set-exercise" class="bar-title"></p>
+      </header>
+
+      <div class="set-head">
+        <h2 id="set-heading" class="set-heading"></h2>
+        <p id="set-target" class="context"></p>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="weight">Weight</label>
+          <div class="weight">
+            <input id="weight" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+            <span class="unit">kg</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reps">Reps</label>
+          <div class="reps">
+            <button id="reps-down" class="step" type="button" aria-label="One rep fewer">−</button>
+            <input id="reps" type="text" inputmode="numeric" autocomplete="off" />
+            <button id="reps-up" class="step" type="button" aria-label="One rep more">+</button>
+          </div>
+        </div>
+      </div>
+
+      <p id="set-info" class="last"></p>
+      <p id="set-message" class="message" role="status"></p>
+
+      <button id="save-button" class="start-button" type="button">Save set</button>
+    </section>
+
+    <section id="screen-rest" class="screen rest" hidden>
+      <p id="rest-context" class="context"></p>
+      <div class="rest-clock">
+        <p id="rest-left" class="huge" aria-live="off"></p>
+        <div class="track" aria-hidden="true"><span id="rest-bar" class="fill"></span></div>
+      </div>
+      <p id="rest-next" class="cue"></p>
+      <p id="rest-saved" class="last"></p>
+      <div class="row">
+        <button id="rest-fix" class="secondary-button" type="button">Fix that set</button>
+        <button id="skip-button" class="secondary-button" type="button">Skip rest</button>
+      </div>
+    </section>
+
+    <section id="screen-result" class="screen result" hidden>
+      <div class="outcome">
+        <p id="result-advice" class="verdict"></p>
+        <p id="result-context" class="context"></p>
+        <p id="result-sets" class="result-sets"></p>
+        <p id="result-reason" class="advice"></p>
+      </div>
+      <button id="next-button" class="start-button" type="button">Next exercise</button>
+      <div class="row">
+        <button id="more-button" class="secondary-button" type="button">One more set</button>
+        <button id="result-fix" class="secondary-button" type="button">Fix that set</button>
+      </div>
+      <button id="result-history" class="secondary-button" type="button">History</button>
+    </section>
+
+    <section id="screen-history" class="screen history" hidden>
+      <header class="bar">
+        <button id="history-back" class="text-button" type="button">Back</button>
+        <h2 class="brand">History</h2>
+      </header>
+      <div class="field">
+        <label for="history-exercise">Exercise</label>
+        <select id="history-exercise"></select>
+      </div>
+      <p id="history-target" class="target"></p>
+      <div id="history-list" class="history-list"></div>
+      <p id="history-empty" class="last" hidden>No sets yet for this exercise.</p>
+      <fieldset id="history-groups" class="field groups">
+        <legend>Groups</legend>
+        <div id="history-group-list" class="checks"></div>
+      </fieldset>
+      <div id="exercise-actions" class="exercise-actions" hidden>
+        <button id="change-target" class="secondary-button" type="button">Change target</button>
+        <button id="rename-exercise" class="secondary-button" type="button">Rename this exercise</button>
+        <button id="delete-exercise" class="secondary-button" type="button">Delete this exercise</button>
+      </div>
+      <form id="target-form" class="field new-item" hidden>
+        <fieldset class="target-row">
+          <legend>Target</legend>
+          <span class="target-part">
+            <input id="edit-sets" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Sets" />
+            sets ×
+          </span>
+          <span class="target-part">
+            <input id="edit-from" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Reps, at least" />
+            –
+            <input id="edit-to" class="num" type="text" inputmode="numeric" autocomplete="off" aria-label="Reps, at most" />
+            reps
+          </span>
+          <span class="target-part">
+            rest
+            <input id="edit-rest" class="num wide" type="text" inputmode="numeric" autocomplete="off" aria-label="Rest in seconds" />
+            s
+          </span>
+        </fieldset>
+        <p id="target-message" class="message" role="status"></p>
+        <div class="actions">
+          <button class="small-button" type="submit">Save</button>
+          <button id="target-cancel" class="text-button" type="button">Cancel</button>
+        </div>
+      </form>
+      <form id="rename-form" class="field new-item" hidden>
+        <label for="rename-exercise-name">Exercise name</label>
+        <div class="inline">
+          <input id="rename-exercise-name" type="text" autocomplete="off" autocapitalize="sentences" enterkeyhint="done" />
+          <button class="small-button" type="submit">Save</button>
+        </div>
+        <p id="rename-message" class="message" role="status"></p>
+        <button id="rename-cancel" class="text-button" type="button">Cancel</button>
+      </form>
+      <div class="backup">
+        <p class="backup-title">Backup</p>
+        <div class="row">
+          <button id="export-csv" class="secondary-button" type="button">Export CSV</button>
+          <button id="export-json" class="secondary-button" type="button">Back up</button>
+          <label class="secondary-button" for="import-json">Restore</label>
+          <input id="import-json" class="visually-hidden" type="file" accept=".json,application/json" />
+        </div>
+        <p id="backup-status" class="note" role="status"></p>
+      </div>
+    </section>
+  </body>
+</html>
