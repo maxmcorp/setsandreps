@@ -230,7 +230,9 @@ input {
 }
 
 select,
-input[type='text'] {
+input[type='text'],
+input[type='date'],
+input[type='time'] {
   width: 100%;
   min-height: 60px;
   padding: 0 16px;
@@ -238,6 +240,19 @@ input[type='text'] {
   border-radius: var(--radius);
   background: var(--floor-raised);
   font-size: 22px;
+}
+
+input[type='date'],
+input[type='time'] {
+  min-width: 0;
+  padding: 0 10px;
+  font-size: 18px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 select {
@@ -549,19 +564,80 @@ body[data-advice='heavier'] .result {
   border-color: currentColor;
 }
 
-/* History */
+/* History: one screen high. The sets scroll in the space between the exercise above and its
+   groups, actions and backup below. On a screen too short for that, the page scrolls as well. */
+
+.history {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.history .bar {
+  margin-bottom: 12px;
+}
 
 .history .field {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.history .history-head .target {
+  margin: 0;
+}
+
+.history-head .text-button {
+  flex: 0 0 auto;
+  color: var(--chalk);
+}
+
+/* Day and time, then weight and reps, side by side. */
+.add-form .pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.history .add-form .field {
+  margin-bottom: 0;
+}
+
+.form-title {
+  font-weight: 600;
+}
+
+.history #add-form {
+  margin: 8px 0 0;
+}
+
+#add-form .message {
+  margin: 0;
 }
 
 .history-list {
   display: grid;
+  flex: 1 1 0;
+  align-content: start;
   gap: 18px;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .day h3 {
-  margin: 0 0 6px;
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  margin: 0;
+  padding-bottom: 6px;
+  background: var(--floor);
   color: var(--chalk-dim);
   font: 600 22px/1.2 var(--display);
 }
@@ -634,13 +710,13 @@ body[data-advice='heavier'] .result {
 
 .history .groups {
   min-width: 0;
-  margin: 28px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   border: 0;
 }
 
 .groups legend {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   padding: 0;
 }
 
@@ -675,10 +751,20 @@ body[data-advice='heavier'] .result {
   accent-color: var(--chalk);
 }
 
+/* Target, Rename and Delete in one row; an armed Delete takes the row for its longer text. */
 .exercise-actions {
-  display: grid;
+  display: flex;
   gap: 10px;
   margin-top: 12px;
+}
+
+.exercise-actions > * {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.exercise-actions:has(.armed) > :not(.armed) {
+  display: none;
 }
 
 .history #rename-form,
@@ -702,7 +788,11 @@ body[data-advice='heavier'] .result {
 
 .backup {
   margin-top: auto;
-  padding-top: 32px;
+  padding-top: 14px;
+}
+
+#backup-status:empty {
+  display: none;
 }
 
 .backup-title {

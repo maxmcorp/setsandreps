@@ -170,7 +170,10 @@
         <label for="history-exercise">Exercise</label>
         <select id="history-exercise"></select>
       </div>
-      <p id="history-target" class="target"></p>
+      <div id="history-head" class="history-head">
+        <p id="history-target" class="target"></p>
+        <button id="add-set" class="text-button" type="button">+ Add a set</button>
+      </div>
       <div id="history-list" class="history-list"></div>
       <p id="history-empty" class="last" hidden>No sets yet for this exercise.</p>
       <fieldset id="history-groups" class="field groups">
@@ -178,9 +181,9 @@
         <div id="history-group-list" class="checks"></div>
       </fieldset>
       <div id="exercise-actions" class="exercise-actions" hidden>
-        <button id="change-target" class="secondary-button" type="button">Change target</button>
-        <button id="rename-exercise" class="secondary-button" type="button">Rename this exercise</button>
-        <button id="delete-exercise" class="secondary-button" type="button">Delete this exercise</button>
+        <button id="change-target" class="secondary-button" type="button">Target</button>
+        <button id="rename-exercise" class="secondary-button" type="button">Rename</button>
+        <button id="delete-exercise" class="secondary-button" type="button">Delete</button>
       </div>
       <form id="target-form" class="field new-item" hidden>
         <fieldset class="target-row">
@@ -207,6 +210,34 @@
           <button id="target-cancel" class="text-button" type="button">Cancel</button>
         </div>
       </form>
+      <form id="add-form" class="field new-item add-form" hidden>
+        <p class="form-title">A set you did without the app</p>
+        <div class="pair">
+          <div class="field">
+            <label for="add-date">Day</label>
+            <input id="add-date" type="date" />
+          </div>
+          <div class="field">
+            <label for="add-time">Time</label>
+            <input id="add-time" type="time" />
+          </div>
+        </div>
+        <div class="pair">
+          <div class="field">
+            <label for="add-weight">Weight, kg</label>
+            <input id="add-weight" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="add-reps">Reps</label>
+            <input id="add-reps" type="text" inputmode="numeric" autocomplete="off" />
+          </div>
+        </div>
+        <p id="add-message" class="message" role="status"></p>
+        <div class="actions">
+          <button class="small-button" type="submit">Add set</button>
+          <button id="add-done" class="text-button" type="button">Done</button>
+        </div>
+      </form>
       <form id="rename-form" class="field new-item" hidden>
         <label for="rename-exercise-name">Exercise name</label>
         <div class="inline">
@@ -216,7 +247,7 @@
         <p id="rename-message" class="message" role="status"></p>
         <button id="rename-cancel" class="text-button" type="button">Cancel</button>
       </form>
-      <div class="backup">
+      <div id="backup" class="backup">
         <p class="backup-title">Backup</p>
         <div class="row">
           <button id="export-csv" class="secondary-button" type="button">Export CSV</button>

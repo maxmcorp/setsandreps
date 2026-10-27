@@ -718,7 +718,7 @@ function renderHistory() {
   $('history-group-list').replaceChildren(...store.groups.map(groupCheck));
   $('history-groups').hidden = !historyExercise || store.groups.length === 0;
   const target = historyExercise ? store.targetOf(historyExercise) : null;
-  $('history-target').hidden = !historyExercise;
+  $('history-head').hidden = !historyExercise;
   if (target) line($('history-target'), 'Target ', describeTarget(target), '');
   const sets = historyExercise ? store.setsFor(historyExercise) : [];
 
@@ -743,11 +743,22 @@ function renderHistory() {
       return block;
     }),
   );
+  $('history-list').hidden = sets.length === 0;
   $('history-empty').hidden = sets.length > 0;
   $('exercise-actions').hidden = !historyExercise;
   $('rename-form').hidden = true;
   $('target-form').hidden = true;
+  $('add-form').hidden = true;
+  $('backup').hidden = false;
   disarmDeleteExercise();
+}
+
+// Shows one of History's forms in place of the exercise's actions. Groups and Backup step aside
+// meanwhile, so the sets keep their room above the form.
+function openHistoryForm(form) {
+  for (const id of ['exercise-actions', 'target-form', 'rename-form', 'add-form']) $(id).hidden = id !== form;
+  $('history-groups').hidden = true;
+  $('backup').hidden = true;
 }
 
 // A checkbox that puts the shown exercise in a group or takes it out.
@@ -799,13 +810,65 @@ function historyEntry(set, number, target) {
 $('history-exercise').addEventListener('change', (event) => {
   historyExercise = event.target.value;
   renderHistory();
+  $('history-list').scrollTop = 0;
 });
+
+// Adding a set done without the app
+
+// The day and time fields as a Date, or null if they don't make one.
+function addFormDate() {
+  const date = $('add-date').value;
+  const time = $('add-time').value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}/.test(time)) return null;
+  const at = new Date(`${date}T${time}`);
+  return Number.isNaN(at.getTime()) ? null : at;
+}
+
+function fillAddFormDate(date) {
+  $('add-date').value = dayKey(date);
+  $('add-time').value = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+// Starts at now, with the weight and reps the next set would start with.
+$('add-set').addEventListener('click', () => {
+  const now = new Date();
+  const start = prefill(store.setsFor(historyExercise), store.targetOf(historyExercise), now);
+  fillAddFormDate(now);
+  $('add-date').max = dayKey(now);
+  $('add-weight').value = start.weightKg === null ? '' : kgFormat.format(start.weightKg);
+  $('add-reps').value = String(start.reps);
+  $('add-message').textContent = '';
+  openHistoryForm('add-form');
+});
+
+// The form stays open with the same weight and reps, two minutes on, for the next set.
+$('add-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const message = (text) => {
+    $('add-message').textContent = text;
+  };
+  const at = addFormDate();
+  if (!at) return message('Pick a day and a time.');
+  if (at.getTime() > Date.now()) return message('That is still to come. Pick a time that has been.');
+  const weightKg = parseWeight($('add-weight').value);
+  if (weightKg === undefined) return message('Weight must be a number, like 42.5.');
+  const reps = parseWhole($('add-reps').value);
+  if (reps === undefined || reps > 999) return message('Reps must be a whole number, like 10.');
+  store.addSet({ exercise: historyExercise, weightKg, reps, at: at.toISOString() });
+  document.activeElement?.blur();
+  renderHistory();
+  openHistoryForm('add-form');
+  const next = new Date(at.getTime() + 2 * 60 * 1000);
+  if (next.getTime() <= Date.now()) fillAddFormDate(next);
+  message(`Added ${kg(weightKg)} × ${reps} on ${dayFormat.format(at)}, ${timeFormat.format(at)}.`);
+});
+
+$('add-done').addEventListener('click', renderHistory);
 
 $('change-target').addEventListener('click', () => {
   fillTarget('edit', store.targetOf(historyExercise));
   $('target-message').textContent = '';
-  $('exercise-actions').hidden = true;
-  $('target-form').hidden = false;
+  openHistoryForm('target-form');
   $('edit-sets').focus();
 });
 
@@ -826,8 +889,7 @@ $('target-cancel').addEventListener('click', renderHistory);
 $('rename-exercise').addEventListener('click', () => {
   $('rename-exercise-name').value = historyExercise;
   $('rename-message').textContent = '';
-  $('exercise-actions').hidden = true;
-  $('rename-form').hidden = false;
+  openHistoryForm('rename-form');
   $('rename-exercise-name').focus();
 });
 

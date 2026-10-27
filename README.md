@@ -19,7 +19,8 @@ Extra sets past the planned ones don't count. A day is a session.
 - The rest starts by itself. A voice says the time left at 60 and 30 s, then counts down from 10, and the next set opens on zero. The screen turns green for the last ten seconds. **Skip rest** goes straight on; **Fix that set** corrects the set you just saved.
 - The screen stays on during sets and rests.
 - After the planned sets, the screen shows the advice in the plate colours: red go lighter, green keep, yellow go heavier. **One more set** adds an extra set after a rest.
-- **History** shows each exercise's sets by day, coloured red, green or yellow for under, in or over the rep range, and the groups it is in, which you can change there. You can also change the exercise's target, rename it, or delete it with its sets. Colours follow the target as it is now. You can export the sets as CSV, or back up and restore them as JSON.
+- **History** shows each exercise's sets by day in a list that scrolls on its own, coloured red, green or yellow for under, in or over the rep range, and the groups it is in, which you can change there. Colours follow the target as it is now. You can also change the exercise's target, rename it, or delete it with its sets. You can export the sets as CSV, or back up and restore them as JSON.
+- Forgot the app? **+ Add a set** in History logs a set afterwards, with its day and time. The form stays open with the time two minutes on, so a whole workout goes in set by set.
 
 ## Install
 
