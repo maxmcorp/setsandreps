@@ -455,6 +455,10 @@ for (const input of document.querySelectorAll('input[inputmode]')) {
 
 $('open-history').addEventListener('click', () => openHistory(store.lastExercise));
 
+// The app's QR code, for someone else to scan. A tap anywhere on it closes it, Close included.
+$('open-share').addEventListener('click', () => $('share').showModal());
+$('share').addEventListener('click', () => $('share').close());
+
 $('start-button').addEventListener('click', () => {
   const { name, error, note } = currentExercise();
   if (!name) {

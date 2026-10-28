@@ -21,6 +21,7 @@ Extra sets past the planned ones don't count. A day is a session.
 - After the planned sets, the screen shows the advice in the plate colours: red go lighter, green keep, yellow go heavier. **One more set** adds an extra set after a rest.
 - **History** shows each exercise's sets by day in a list that scrolls on its own, coloured red, green or yellow for under, in or over the rep range, and the groups it is in, which you can change there. Colours follow the target as it is now. You can also change the exercise's target, rename it, or delete it with its sets. You can export the sets as CSV, or back up and restore them as JSON.
 - Forgot the app? **+ Add a set** in History logs a set afterwards, with its day and time. The form stays open with the time two minutes on, so a whole workout goes in set by set.
+- The QR icon at the top shows the app's code full screen, for a friend to scan with their phone's camera.
 
 ## Install
 
@@ -70,6 +71,6 @@ npm run serve          # http://localhost:8000; no service worker on http, so ed
 | `sw.js` | Offline cache |
 | `tools/build.mjs` | Run before each deploy |
 | `tools/make-icons.py` | Draws the app icons |
-| `tools/make-qr.py` | Writes `qr.png` for the app's address |
+| `tools/make-qr.py` | Writes the QR code for the app's address: `qr.png` for this README, `qr.svg` for the app |
 
 Fonts: Barlow and Barlow Condensed by Jeremy Tribby, under the SIL Open Font License (`fonts/OFL.txt`).
